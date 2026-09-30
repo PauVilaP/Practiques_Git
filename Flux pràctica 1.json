@@ -1,0 +1,114 @@
+[
+    {
+        "id": "b221ed0b7d5e8a6a",
+        "type": "tab",
+        "label": "Flujo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "121f1b21608d1df1",
+        "type": "inject",
+        "z": "b221ed0b7d5e8a6a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 260,
+        "wires": [
+            [
+                "a31e28ef956cb771"
+            ]
+        ]
+    },
+    {
+        "id": "a31e28ef956cb771",
+        "type": "function",
+        "z": "b221ed0b7d5e8a6a",
+        "name": "function 1",
+        "func": "msg.payload = parseInt(Math.random()*100);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 260,
+        "wires": [
+            [
+                "46446a267bdca71e"
+            ]
+        ]
+    },
+    {
+        "id": "13d8532c422964ac",
+        "type": "debug",
+        "z": "b221ed0b7d5e8a6a",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "46446a267bdca71e",
+        "type": "function",
+        "z": "b221ed0b7d5e8a6a",
+        "name": "function 2",
+        "func": "let data = new Date().toISOString()+\" - \"+msg.payload;\nmsg.payload=JSON.stringify(data);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 340,
+        "wires": [
+            [
+                "20b4e2ac97658df0",
+                "13d8532c422964ac"
+            ]
+        ]
+    },
+    {
+        "id": "20b4e2ac97658df0",
+        "type": "file",
+        "z": "b221ed0b7d5e8a6a",
+        "name": "",
+        "filename": "/home/pau/random.jsonl",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 850,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    }
+]
