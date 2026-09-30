@@ -1,0 +1,11 @@
+# PlatformIO
+.pio/
+.vscode/
+
+# Credencials
+secrets.h
+credentials.h
+.env
+*.pem
+id_rsa*
+flows_cred.json
