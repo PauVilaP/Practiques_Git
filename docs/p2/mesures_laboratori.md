@@ -50,7 +50,7 @@ ESP32:
   - El node es manté OPERATIU i es recupera sol al primer intent després de la desconnexió.
   - Al fitxer hi ha un forat de 70 s entre 569 i 639: 6 mostres perdudes, perquè el node no les guarda.
 
-## Exercici 4 · Pendent
+## Exercici 4
 
 - La característica temperatura (`06461B91-9893-4888-8BFF-970F5A6E4274`, lectura i notificació) es veu a l'nRF Connect.
-- Falta mesurar les notificacions per minut amb el sensor en repòs i escalfant-se.
+- No s'ha fet la mesura de notificacions per minut: el mòbil (nRF Connect, iOS) no activava el 2902.
