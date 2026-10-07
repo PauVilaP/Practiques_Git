@@ -1,0 +1,146 @@
+[
+    {
+        "id": "a1f0c3d2e4b50001",
+        "type": "tab",
+        "label": "P2 · Telemetria REST",
+        "disabled": false,
+        "info": "Exercici 5 de la P2: l'AtomS3 envia cada 10 s un POST amb JSON a /api/telemetria. Es valida, s'hi afegeix la marca de temps i es desa com una linia al fitxer JSONL."
+    },
+    {
+        "id": "a1f0c3d2e4b50002",
+        "type": "comment",
+        "z": "a1f0c3d2e4b50001",
+        "name": "POST /api/telemetria  ->  201 desat | 400 JSON invalid | 422 falten camps o temperatura fora de rang",
+        "info": "",
+        "x": 470,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "a1f0c3d2e4b50003",
+        "type": "http in",
+        "z": "a1f0c3d2e4b50001",
+        "name": "POST /api/telemetria",
+        "url": "/api/telemetria",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 160,
+        "wires": [
+            [
+                "a1f0c3d2e4b50004"
+            ]
+        ]
+    },
+    {
+        "id": "a1f0c3d2e4b50004",
+        "type": "function",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Valida i afegeix la marca de temps",
+        "func": "// Exercici 5 - Valida la mostra que envia l'AtomS3\n// Sortida 1: mostra correcta (va al fitxer)   Sortida 2: error (va directe a la resposta)\n\n// 1. Llegim el cos. Arriba en brut (text o Buffer) perque volem\n//    controlar nosaltres l'error de JSON mal escrit (400)\nlet cos = msg.payload;\nif (Buffer.isBuffer(cos)) {\n    cos = cos.toString(\"utf8\");\n}\nlet dades = cos;\nif (typeof cos === \"string\") {\n    try {\n        dades = JSON.parse(cos);\n    } catch (e) {\n        dades = undefined;\n    }\n}\n\n// 2. Ha de ser un objecte JSON. Si no -> 400 Bad Request\nif (dades === null || typeof dades !== \"object\" || Array.isArray(dades)) {\n    msg.statusCode = 400;\n    msg.payload = { error: \"JSON invalid\" };\n    return [null, msg];\n}\n\n// 3. Hi han de ser tots els camps. Si en falta algun -> 422\nconst camps = [\"id\", \"temperatura\", \"humitat\", \"rssi\", \"temps_activitat\"];\nconst falten = camps.filter(c => dades[c] === undefined || dades[c] === null || dades[c] === \"\");\nif (falten.length > 0) {\n    msg.statusCode = 422;\n    msg.payload = { error: \"Falten camps\", falten: falten };\n    return [null, msg];\n}\n\n// 4. Temperatura dins d'un rang raonable: el del DHT22 (-40 a 80 C). Si no -> 422\nconst t = Number(dades.temperatura);\nif (!Number.isFinite(t) || t < -40 || t > 80) {\n    msg.statusCode = 422;\n    msg.payload = { error: \"Temperatura fora de rang\", temperatura: dades.temperatura };\n    return [null, msg];\n}\n\n// 5. Tot correcte: afegim la marca de temps en format ISO 8601\ndades.rebut = new Date().toISOString();\nmsg.payload = JSON.stringify(dades);   // una linia de text per al fitxer JSONL\nreturn [msg, null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 160,
+        "wires": [
+            [
+                "a1f0c3d2e4b50005",
+                "a1f0c3d2e4b50008"
+            ],
+            [
+                "a1f0c3d2e4b50007",
+                "a1f0c3d2e4b50009"
+            ]
+        ]
+    },
+    {
+        "id": "a1f0c3d2e4b50005",
+        "type": "file",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Desa a telemetria.jsonl",
+        "filename": "/home/pau/dades/telemetria.jsonl",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 730,
+        "y": 140,
+        "wires": [
+            [
+                "a1f0c3d2e4b50006"
+            ]
+        ]
+    },
+    {
+        "id": "a1f0c3d2e4b50006",
+        "type": "function",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Respon 201",
+        "func": "// La mostra ja s'ha desat al fitxer -> 201 Created\nmsg.statusCode = 201;\nmsg.payload = { resultat: \"desat\" };\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 140,
+        "wires": [
+            [
+                "a1f0c3d2e4b50007"
+            ]
+        ]
+    },
+    {
+        "id": "a1f0c3d2e4b50007",
+        "type": "http response",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Resposta HTTP",
+        "statusCode": "",
+        "headers": {},
+        "x": 1120,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a1f0c3d2e4b50008",
+        "type": "debug",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Mostra desada",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a1f0c3d2e4b50009",
+        "type": "debug",
+        "z": "a1f0c3d2e4b50001",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 240,
+        "wires": []
+    }
+]
