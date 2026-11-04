@@ -1,0 +1,945 @@
+[
+    {
+        "id": "p3tab0000000001",
+        "type": "tab",
+        "label": "P3 · MQTT i dashboard",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "p3n0000000000001",
+        "type": "comment",
+        "z": "p3tab0000000001",
+        "name": "Exercici 3 · Telemetria en temps real",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000005",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Separa per magnitud (pel tema)",
+        "func": "// Tema: uvic/se2627/pauvila/<node>/telemetria/<magnitud>\nconst parts = msg.topic.split(\"/\");\nconst nomNode = parts[3];\nconst magnitud = parts[5];\n\nmsg.payload = msg.payload.valor;     // del JSON ens quedem amb el valor\nmsg.topic = nomNode + \" \" + magnitud;   // nom de la serie al grafic\n\nif (magnitud === \"temp\") return [msg, null];\nif (magnitud === \"hum\")  return [null, msg];\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 100,
+        "wires": [
+            [
+                "p3n0000000000002",
+                "p3n0000000000004"
+            ],
+            [
+                "p3n0000000000003",
+                "p3n0000000000004"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000006",
+        "type": "mqtt in",
+        "z": "p3tab0000000001",
+        "name": "Telemetria de l'equip",
+        "topic": "uvic/se2627/pauvila/+/telemetria/+",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "p3broker0000001",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "p3n0000000000005"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000002",
+        "type": "ui-gauge",
+        "z": "p3tab0000000001",
+        "name": "",
+        "group": "p3grupdades001",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Temperatura",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "°C",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c"
+            },
+            {
+                "from": "30",
+                "color": "#ffc800"
+            },
+            {
+                "from": "40",
+                "color": "#ea5353"
+            }
+        ],
+        "min": 0,
+        "max": 50,
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 760,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "p3n0000000000003",
+        "type": "ui-gauge",
+        "z": "p3tab0000000001",
+        "name": "",
+        "group": "p3grupdades001",
+        "order": 2,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humitat",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "%",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c"
+            },
+            {
+                "from": "70",
+                "color": "#ffc800"
+            },
+            {
+                "from": "85",
+                "color": "#ea5353"
+            }
+        ],
+        "min": 0,
+        "max": 100,
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 760,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "p3n0000000000004",
+        "type": "ui-chart",
+        "z": "p3tab0000000001",
+        "group": "p3grupdades001",
+        "name": "",
+        "label": "Darrers 10 minuts",
+        "order": 3,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": null,
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "payload",
+        "yAxisPropertyType": "msg",
+        "ymin": "",
+        "ymax": "",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "10",
+        "removeOlderUnit": "60",
+        "removeOlderPoints": "",
+        "colors": [
+            "#0095FF",
+            "#FF0000",
+            "#FF7F0E",
+            "#2CA02C",
+            "#A347E1",
+            "#D62728",
+            "#FF9896",
+            "#9467BD",
+            "#C5B0D5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 6,
+        "className": "",
+        "interpolation": "linear",
+        "x": 760,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "p3n0000000000011",
+        "type": "mqtt in",
+        "z": "p3tab0000000001",
+        "name": "Estat del node (retingut)",
+        "topic": "uvic/se2627/pauvila/node01/status",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "p3broker0000001",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 200,
+        "wires": [
+            [
+                "p3n0000000000010"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000010",
+        "type": "ui-text",
+        "z": "p3tab0000000001",
+        "group": "p3grupdades001",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Estat del node",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "Helvetica",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 760,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000013",
+        "type": "comment",
+        "z": "p3tab0000000001",
+        "name": "Exercici 4 · Periode d'enviament des del dashboard",
+        "info": "",
+        "x": 210,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000015",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Missatge de configuracio (periode)",
+        "func": "// {\"id\":\"c...\",\"parametre\":\"periode\",\"valor\":30} al tema de configuracio\nmsg.topic = \"uvic/se2627/pauvila/node01/config/periode\";\nmsg.payload = {\n    id: \"c\" + Date.now(),      // identificador unic\n    parametre: \"periode\",\n    valor: msg.payload         // el valor del lliscant\n};\nmsg.retain = true;             // retingut: el node el recupera en reiniciar\nmsg.qos = 1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 340,
+        "wires": [
+            [
+                "p3n0000000000014"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000016",
+        "type": "ui-slider",
+        "z": "p3tab0000000001",
+        "group": "p3grupcontrol1",
+        "name": "",
+        "label": "Periode d'enviament (s)",
+        "tooltip": "",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "thumbLabel": true,
+        "showTicks": "false",
+        "min": 1,
+        "max": 60,
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 170,
+        "y": 340,
+        "wires": [
+            [
+                "p3n0000000000015"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000014",
+        "type": "mqtt out",
+        "z": "p3tab0000000001",
+        "name": "Publica al broker",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "p3broker0000001",
+        "x": 1230,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000019",
+        "type": "mqtt in",
+        "z": "p3tab0000000001",
+        "name": "Acusament del periode",
+        "topic": "uvic/se2627/pauvila/node01/ack/periode",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "p3broker0000001",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 400,
+        "wires": [
+            [
+                "p3n0000000000018"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000018",
+        "type": "ui-text",
+        "z": "p3tab0000000001",
+        "group": "p3grupcontrol1",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Periode aplicat pel node (s)",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "Helvetica",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload.valor",
+        "valueType": "msg",
+        "x": 470,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000021",
+        "type": "comment",
+        "z": "p3tab0000000001",
+        "name": "Exercici 5 · Aturar i reprendre la transmissio",
+        "info": "",
+        "x": 200,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000024",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Ordre de transmissio",
+        "func": "// L'estat real del node (el guarda \"Etiqueta del boto\")\nconst estat = flow.get(\"transmissio\") || \"running\";\n\n// Si ara transmet, l'ordre és \"atura\"; si està aturat, \"repren\"\nlet ordre;\nif (estat === \"running\") ordre = \"atura\";\nelse ordre = \"repren\";\n\nmsg.topic = \"uvic/se2627/pauvila/node01/cmd/transmissio\";\nmsg.payload = { id: \"o\" + Date.now(), valor: ordre };\nmsg.retain = false;   // una ordre vella no s'ha de tornar a executar\nmsg.qos = 1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 540,
+        "wires": [
+            [
+                "p3n0000000000014"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000025",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Etiqueta del boto",
+        "func": "// Arriba l'estat real del node: \"running\" o \"paused\"\nflow.set(\"transmissio\", msg.payload);   // el guardem perquè \"Ordre de transmissio\" el pugui llegir\n\n// El botó diu el que farà quan el cliquis\nlet text;\nif (msg.payload === \"running\") text = \"Atura transmissio\";\nelse text = \"Repren transmissio\";\nreturn { ui_update: { label: text } };",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 540,
+        "wires": [
+            [
+                "p3n0000000000022"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000026",
+        "type": "mqtt in",
+        "z": "p3tab0000000001",
+        "name": "Estat de la transmissio (retingut)",
+        "topic": "uvic/se2627/pauvila/node01/status/transmissio",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "p3broker0000001",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 540,
+        "wires": [
+            [
+                "p3n0000000000025",
+                "p3n0000000000023"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000022",
+        "type": "ui-button",
+        "z": "p3tab0000000001",
+        "group": "p3grupcontrol1",
+        "name": "",
+        "label": "Atura transmissio",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 700,
+        "y": 540,
+        "wires": [
+            [
+                "p3n0000000000024"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000023",
+        "type": "ui-text",
+        "z": "p3tab0000000001",
+        "group": "p3grupcontrol1",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Transmissio",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "Helvetica",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 470,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000029",
+        "type": "comment",
+        "z": "p3tab0000000001",
+        "name": "Exercici 6 · Llindars i alarmes",
+        "info": "",
+        "x": 160,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000030",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Missatge de configuracio (llindars)",
+        "func": "// {\"id\":\"c...\",\"parametre\":\"llindars\",\"valor\":{\"tmin\":..,\"tmax\":..,\"hmin\":..,\"hmax\":..}}\nmsg.topic = \"uvic/se2627/pauvila/node01/config/llindars\";\nmsg.payload = {\n    id: \"c\" + Date.now(),\n    parametre: \"llindars\",\n    valor: {\n        tmin: Number(msg.payload.tmin),\n        tmax: Number(msg.payload.tmax),\n        hmin: Number(msg.payload.hmin),\n        hmax: Number(msg.payload.hmax)\n    }\n};\nmsg.retain = true;\nmsg.qos = 1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 780,
+        "wires": [
+            [
+                "p3n0000000000014"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000031",
+        "type": "ui-form",
+        "z": "p3tab0000000001",
+        "name": "",
+        "group": "p3grupalarmes1",
+        "label": "Llindars",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Temperatura minima (°C)",
+                "key": "tmin",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Temperatura maxima (°C)",
+                "key": "tmax",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Humitat minima (%)",
+                "key": "hmin",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Humitat maxima (%)",
+                "key": "hmax",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "tmin": "",
+            "tmax": "",
+            "hmin": "",
+            "hmax": ""
+        },
+        "payload": "",
+        "submit": "Envia",
+        "cancel": "Neteja",
+        "resetOnSubmit": false,
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "passthru": false,
+        "dropdownOptions": [],
+        "x": 170,
+        "y": 780,
+        "wires": [
+            [
+                "p3n0000000000030"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000035",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Text i avis de l'alarma",
+        "func": "// Arriba: tema .../alarma/temp (o .../alarma/hum) i missatge {\"actiu\":true,\"valor\":31.2}\nconst alarma = msg.payload;\n\n// 1. De quina magnitud és?\nlet nom, unitat;\nif (msg.topic.endsWith(\"temp\")) {\n    nom = \"temperatura\";\n    unitat = \" °C\";\n} else {\n    nom = \"humitat\";\n    unitat = \" %\";\n}\n\n// 2. Els dos textos: el de l'indicador i el de l'avís\nlet text, avis;\nif (alarma.actiu) {\n    text = \"ALARMA (\" + alarma.valor + unitat + \")\";\n    avis = \"Alarma de \" + nom + \": \" + alarma.valor + unitat;\n} else {\n    text = \"normal\";\n    avis = \"Fi de l'alarma de \" + nom;\n}\n\n// 3. Sortida 1: indicador de temperatura | 2: indicador d'humitat | 3: avís emergent\nif (nom === \"temperatura\") return [{ payload: text }, null, { payload: avis }];\nreturn [null, { payload: text }, { payload: avis }];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 860,
+        "wires": [
+            [
+                "p3n0000000000032"
+            ],
+            [
+                "p3n0000000000033"
+            ],
+            [
+                "p3n0000000000034"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000036",
+        "type": "mqtt in",
+        "z": "p3tab0000000001",
+        "name": "Alarmes del node",
+        "topic": "uvic/se2627/pauvila/node01/alarma/+",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "p3broker0000001",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 860,
+        "wires": [
+            [
+                "p3n0000000000035",
+                "p3n0000000000037"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000037",
+        "type": "function",
+        "z": "p3tab0000000001",
+        "name": "Historic d'alarmes",
+        "func": "// Arriba: tema .../alarma/temp (o .../alarma/hum) i missatge {\"actiu\":true,\"valor\":31.2,\"ts\":...}\n// Cada avís afegeix una fila a la taula:   Hora | Magnitud | Estat | Valor\nconst alarma = msg.payload;\n\n// 1. De quina magnitud és?\nlet magnitud, unitat;\nif (msg.topic.endsWith(\"temp\")) {\n    magnitud = \"Temperatura\";\n    unitat = \" °C\";\n} else {\n    magnitud = \"Humitat\";\n    unitat = \" %\";\n}\n\n// 2. Comença o s'acaba?\nlet estat;\nif (alarma.actiu) estat = \"Inici\";\nelse estat = \"Fi\";\n\n// 3. La fila nova: cada nom (Hora, Magnitud, Estat, Valor) serà una columna de la taula\nconst hora = new Date().toLocaleString(\"ca-ES\", { timeZone: \"Europe/Madrid\" });   // p. ex. \"2/11/2026 18:58:31\"\nconst fila = { Hora: hora, Magnitud: magnitud, Estat: estat, Valor: alarma.valor + unitat };\n\n// 4. Les files d'abans són a la memòria del flux (el primer cop encara no n'hi ha cap)\nlet historic = flow.get(\"historicAlarmes\");\nif (historic === undefined) historic = [];\n\nhistoric.unshift(fila);                      // la nova, a dalt de tot\nif (historic.length > 5) historic.pop();     // màxim 5 files: traiem la més vella (la de baix)\n\nflow.set(\"historicAlarmes\", historic);       // la desem per al pròxim avís\n\n// 5. La taula rep totes les files i les torna a dibuixar\nmsg.payload = historic;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 940,
+        "wires": [
+            [
+                "p3n0000000000038"
+            ]
+        ]
+    },
+    {
+        "id": "p3n0000000000038",
+        "type": "ui-table",
+        "z": "p3tab0000000001",
+        "group": "p3grupalarmes1",
+        "name": "",
+        "label": "Historic d'alarmes",
+        "order": 4,
+        "width": 6,
+        "height": 0,
+        "maxrows": 0,
+        "passthru": false,
+        "autocols": true,
+        "showSearch": false,
+        "deselect": true,
+        "selectionType": "none",
+        "columns": null,
+        "mobileBreakpoint": "sm",
+        "mobileBreakpointType": "defaults",
+        "action": "replace",
+        "className": "",
+        "x": 760,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "p3n0000000000032",
+        "type": "ui-text",
+        "z": "p3tab0000000001",
+        "group": "p3grupalarmes1",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Alarma temperatura",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "Helvetica",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 760,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000033",
+        "type": "ui-text",
+        "z": "p3tab0000000001",
+        "group": "p3grupalarmes1",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Alarma humitat",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "Helvetica",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 760,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "p3n0000000000034",
+        "type": "ui-notification",
+        "z": "p3tab0000000001",
+        "ui": "p3uibase000001",
+        "position": "top right",
+        "colorDefault": true,
+        "color": null,
+        "displayTime": "5",
+        "showCountdown": true,
+        "outputs": 0,
+        "allowDismiss": true,
+        "dismissText": "Close",
+        "allowConfirm": false,
+        "confirmText": "Confirm",
+        "raw": false,
+        "className": "",
+        "name": "Avis emergent",
+        "x": 760,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "p3broker0000001",
+        "type": "mqtt-broker",
+        "name": "Mosquitto (Raspberry)",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered-pauvila",
+        "autoConnect": true,
+        "usetls": false,
+        "verifyservercert": false,
+        "compatmode": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": 0
+    },
+    {
+        "id": "p3uibase000001",
+        "type": "ui-base",
+        "name": "Dashboard P3",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "p3uitheme00001",
+        "type": "ui-theme",
+        "name": "Tema",
+        "colors": {
+            "surface": "#fcfcfd",
+            "primary": "#0d74ce",
+            "bgPage": "#f9f9fb",
+            "groupBg": "#ffffff",
+            "groupOutline": "#d9d9e0"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "p3uipage000001",
+        "type": "ui-page",
+        "name": "Node 01",
+        "ui": "p3uibase000001",
+        "path": "/node01",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "p3uitheme00001",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": 0,
+                "cols": 3
+            },
+            {
+                "name": "Tablet",
+                "px": 576,
+                "cols": 6
+            },
+            {
+                "name": "Small Desktop",
+                "px": 768,
+                "cols": 9
+            },
+            {
+                "name": "Desktop",
+                "px": 1024,
+                "cols": 12
+            }
+        ],
+        "tabs": [],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "p3grupdades001",
+        "type": "ui-group",
+        "name": "Dades",
+        "page": "p3uipage000001",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "tab": ""
+    },
+    {
+        "id": "p3grupcontrol1",
+        "type": "ui-group",
+        "name": "Control",
+        "page": "p3uipage000001",
+        "width": "6",
+        "height": "1",
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "tab": ""
+    },
+    {
+        "id": "p3grupalarmes1",
+        "type": "ui-group",
+        "name": "Alarmes",
+        "page": "p3uipage000001",
+        "width": "6",
+        "height": "1",
+        "order": 3,
+        "showTitle": true,
+        "className": "",
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "tab": ""
+    }
+]
