@@ -1,0 +1,13 @@
+# /etc/mosquitto/acl
+
+# Node-RED: llegeix i escriu tot el de l'equip
+user nodered
+topic readwrite uvic/se2627/pauvila/#
+
+# pau (MQTT Explorer des del portatil): nomes mirar
+user pau
+topic read uvic/se2627/pauvila/#
+
+# Cada node nomes a la seva branca. %u es el nom d'usuari:
+# l'usuari node01 nomes pot fer servir uvic/se2627/pauvila/node01/...
+pattern readwrite uvic/se2627/pauvila/%u/#
