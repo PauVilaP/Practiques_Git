@@ -1,0 +1,10 @@
+-- Mitjana de cada hora de la temperatura de les ultimes 24 hores (P-PRE4)
+-- Base de dades "iot", politica de retencio "calenta", measurement "telemetria"
+-- Sense executar: la base i les politiques es creen a la P4
+
+SELECT mean("valor") AS "mitjana"
+FROM "iot"."calenta"."telemetria"
+WHERE "magnitud" = 'temp'
+  AND "device_id" = 'node01'
+  AND time > now() - 24h
+GROUP BY time(1h) fill(none) tz('Europe/Madrid')
